@@ -19,8 +19,8 @@ public class ProductController {
     }
 
     @RequestMapping("/products")
-    public String getBillTotal(@QueryParam("productlist") String[] productlist) {
-    	return productService.getBillTotalForProducts(productlist);
+    public String getBillTotal(@QueryParam("productlist") String[] productlist, @QueryParam("offerlist") String[] offerlist) {
+    	return productService.getBillTotalForProducts(productlist, offerlist);
     }
 
 }

@@ -32,7 +32,7 @@ public class EposIT {
 	}
 	
 	@Test
-	public void givenURIWithProudct_ExpectNonZeroInResult()
+	public void givenURIWithProudct_ExpectNonZeroInResult_HappyPath()
 	      throws ClientProtocolException, IOException {
 	   // Given
 	   HttpUriRequest request = new HttpGet( "http://localhost:8080/epos/products?productlist=apple&productlist=Orange");
@@ -75,5 +75,49 @@ public class EposIT {
 	   
 	   String jsonFromResponse = EntityUtils.toString(httpResponse.getEntity());
 	   Assert.assertThat("[ERR-100] Product 'aaa' entered is invalid.", equalTo(jsonFromResponse));
+	}
+	/***********************************************************/
+	
+	@Test
+	public void givenURIWithProudct_WithOffer_ExpectNonZeroInResult_HappyPath()
+	      throws ClientProtocolException, IOException {
+	   // Given
+	   HttpUriRequest request = new HttpGet( "http://localhost:8080/epos/products?productlist=apple,apple,apple,Orange,Orange,Orange,Orange&offerlist=OFFER_BOGOF-apple,offer_3for2-Orange");
+	 
+	   // When
+	   HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
+
+	   // Then
+	   String jsonFromResponse = EntityUtils.toString(httpResponse.getEntity());
+	   Assert.assertThat("£1.95", equalTo(jsonFromResponse));
+	}
+	
+	@Test
+	public void givenURIWithProudct_InvalidOffer_ExpectError()
+	      throws ClientProtocolException, IOException {
+	   // Given
+	   HttpUriRequest request = new HttpGet( "http://localhost:8080/epos/products?productlist=orange,apple&offerlist=OFFER_BOGOF-orange");
+	 
+	   // When
+	   HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
+
+	   // Then
+	   String jsonFromResponse = EntityUtils.toString(httpResponse.getEntity());
+	   Assert.assertThat("[ERR-103] Invalid OFFER 'OFFER_BOGOF' for the product orange.", equalTo(jsonFromResponse));
+	}
+	
+	
+	@Test
+	public void givenURIWithProudct_InvalidOfferSyntax_ExpectError()
+	      throws ClientProtocolException, IOException {
+	   // Given
+	   HttpUriRequest request = new HttpGet( "http://localhost:8080/epos/products?productlist=orange,apple&offerlist=offer_bogof");
+	 
+	   // When
+	   HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
+
+	   // Then
+	   String jsonFromResponse = EntityUtils.toString(httpResponse.getEntity());
+	   Assert.assertThat("[ERR-102] Invalid offer syntax for offer offer_bogof.", equalTo(jsonFromResponse));
 	}
 }

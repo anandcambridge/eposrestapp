@@ -88,5 +88,68 @@ public class ProductRepositoryTest {
 		BigDecimal result = productRepository.getProductPrice(product);
 		Assert.assertNull(result);
 	}
+
+	@Test
+	public void isValidOffer_HappyPath() {
+		for(Product product: Product.values()) {
+			boolean result = productRepository.isValidOffer(product.productName, product.offerLst.get(0));
+			Assert.assertTrue(result);
+		}
+	}
+	
+	@Test
+	public void isValidOffer_DiferentCase_HappyPath() {
+		for(Product product: Product.values()) {
+			String offer = product.offerLst.get(0);
+			boolean result = productRepository.isValidOffer(StringUtils.lowerCase(product.productName), StringUtils.lowerCase(offer));
+			Assert.assertTrue(result);
+			result = productRepository.isValidOffer(StringUtils.upperCase(product.productName), StringUtils.upperCase(offer));
+			Assert.assertTrue(result);
+			result = productRepository.isValidOffer(StringUtils.capitalize(product.productName), StringUtils.capitalize(offer));
+			Assert.assertTrue(result);
+		}
+	}
+	
+	@Test
+	public void isValidOffer_CheckWrongProduct() {
+		String product = "jam777";
+		boolean result = productRepository.isValidOffer(product, Product.APPLE.offerLst.get(0));
+		Assert.assertFalse(result);
+	}
+	
+	@Test
+	public void isValidOffer_CheckWrongOffer() {
+		String offer = "jam777";
+		boolean result = productRepository.isValidOffer(Product.APPLE.productName, offer);
+		Assert.assertFalse(result);
+	}
+	
+	@Test
+	public void isValidOffer_EmptyProduct() {
+		String product = StringUtils.EMPTY;
+		boolean result = productRepository.isValidOffer(product, Product.APPLE.offerLst.get(0));
+		Assert.assertFalse(result);
+	}
+	
+	@Test
+	public void isValidOffer_EmptyOffer() {
+		String offer = StringUtils.EMPTY;
+		boolean result = productRepository.isValidOffer(Product.APPLE.productName, offer);
+		Assert.assertFalse(result);
+	}
+	
+	@Test
+	public void isValidOffer_NullProduct() {
+		String product = null;
+		boolean result = productRepository.isValidOffer(product, Product.APPLE.offerLst.get(0));
+		Assert.assertFalse(result);
+	}
+	
+	@Test
+	public void isValidOffer_NullOffer() {
+		String offer = null;
+		boolean result = productRepository.isValidOffer(Product.APPLE.productName, offer);
+		Assert.assertFalse(result);
+	}
 	
 }
